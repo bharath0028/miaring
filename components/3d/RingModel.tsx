@@ -147,7 +147,7 @@ export const RingModel: React.FC<RingModelProps> = ({
           pos: worldPos,
           quat: worldQuat,
           scale: worldScale,
-          geo: c.geometry.clone(),
+          geo: c.geometry, // Use geometry directly without cloning
           minY: bbox.min.y,
           height: bbox.max.y - bbox.min.y,
         });
@@ -182,7 +182,7 @@ export const RingModel: React.FC<RingModelProps> = ({
           pos: worldPos,
           quat: worldQuat,
           scale: worldScale,
-          geo: c.geometry.clone(),
+          geo: c.geometry, // Use geometry directly without cloning
           minY: bbox.min.y,
           height: bbox.max.y - bbox.min.y,
         });
