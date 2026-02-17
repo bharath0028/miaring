@@ -6,6 +6,7 @@ import { BlendFunction } from "postprocessing";
 import { MetalType, GemType, SkinTone, RingModelType } from "../../types";
 import { RingModel } from "./RingModel";
 import { HandModel } from "./HandModel";
+import { RingLoader } from "../ui/RingLoader";
 import * as THREE from "three";
 
 interface SceneProps {
@@ -113,7 +114,7 @@ export const Scene: React.FC<SceneProps> = ({
 
   return (
     <div ref={containerRef} className="relative w-full h-full select-none">
-      {/* loader removed to prevent showing on every refresh */}
+      {!isModelReady && <RingLoader />}
 
         <Canvas
         shadows
