@@ -204,8 +204,6 @@ export const Scene: React.FC<SceneProps> = ({
             minDistance={2.5}
             maxDistance={8}
             autoRotate={autoRotate}
-            damping={true}
-            dampingFactor={0.05}
             autoRotateSpeed={8.5}
           />
 
