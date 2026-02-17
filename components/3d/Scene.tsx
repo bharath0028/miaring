@@ -126,7 +126,7 @@ export const Scene: React.FC<SceneProps> = ({
           toneMappingExposure: isMacChrome ? 1.0 : 1.2,
           outputColorSpace: THREE.SRGBColorSpace,
         }}
-        camera={{ position: [0, 2, 6], fov: 45 }}
+        camera={{ position: [0, 2, 6], fov: 60 }}
         className="w-full h-full select-none"
         style={
           (() => {
