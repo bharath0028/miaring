@@ -207,7 +207,7 @@ export const ConfiguratorUI: React.FC<ConfiguratorUIProps> = React.memo(
 
     const ringModelOptions = useMemo(() => createRingModelOptions(), []);
 
-    const [activeTab, setActiveTab] = useState<'metal' | 'gem' | 'shape' | 'ring' | 'render'>('gem');
+    const [activeTab, setActiveTab] = useState<'metal' | 'gem' | 'ring' | 'render'>('gem');
 
     const handleMetalSelect = useCallback((value: MetalType | boolean) => { if (typeof value !== 'boolean') setMetal(value); }, [setMetal]);
     const handleGemSelect = useCallback((value: GemType | boolean) => { if (typeof value !== 'boolean') setGem(value); }, [setGem]);
@@ -245,23 +245,6 @@ export const ConfiguratorUI: React.FC<ConfiguratorUIProps> = React.memo(
                         isActive={metal === opt.value}
                         onClick={() => handleMetalSelect(opt.value as any)}
                         previewColor={opt.previewColor}
-                      />
-                    </div>
-                  ))}
-                </div>
-              </div>
-            ) : activeTab === 'shape' ? (
-              <div>
-                <div className="flex items-center justify-start gap-4 overflow-x-auto py-2 px-1">
-                  {diamondShapeOptions.map((opt) => (
-                    <div key={opt.value} className="flex-shrink-0">
-                      <OptionItem
-                        value={opt.value as any}
-                        label={opt.label}
-                        isActive={diamondShape === opt.value}
-                        onClick={() => handleDiamondShapeSelect(opt.value as any)}
-                        previewImage={opt.previewImage}
-                        imageOnly={true}
                       />
                     </div>
                   ))}
@@ -314,18 +297,16 @@ export const ConfiguratorUI: React.FC<ConfiguratorUIProps> = React.memo(
                 {[
                   { key: 'metal', label: 'Metal' },
                   { key: 'ring', label: 'Gem stone' },
-                  { key: 'diamond', label: 'Diamond shape' },
                   { key: 'render', label: 'Render' },
                 ].map((t) => (
                   <button
                     key={t.key}
                     onClick={() => {
                       if (t.key === 'metal') setActiveTab('metal');
-                      else if (t.key === 'diamond') setActiveTab('shape');
                       else if (t.key === 'ring') setActiveTab('ring');
                       else if (t.key === 'render') setActiveTab('render');
                     }}
-                    className={`px-6 py-2 min-w-[145px] text-center whitespace-normal leading-tight rounded-full text-sm font-medium ${((t.key === 'metal' && activeTab === 'metal') || (t.key === 'diamond' && activeTab === 'shape') || (t.key === 'ring' && activeTab === 'ring') || (t.key === 'render' && activeTab === 'render')) ? 'bg-white text-black' : 'text-gray-600'}`}
+                    className={`px-6 py-2 min-w-[145px] text-center whitespace-normal leading-tight rounded-full text-sm font-medium ${((t.key === 'metal' && activeTab === 'metal') || (t.key === 'ring' && activeTab === 'ring') || (t.key === 'render' && activeTab === 'render')) ? 'bg-white text-black' : 'text-gray-600'}`}
                   >
                     {t.label}
                   </button>
