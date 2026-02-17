@@ -12,26 +12,5 @@ export default defineConfig({
     alias: {
       '@': path.resolve(__dirname, '.'),
     }
-  },
-  build: {
-    minify: 'terser',
-    terserOptions: {
-      compress: {
-        passes: 2,
-        drop_console: true,
-      },
-      mangle: true,
-    },
-    rollupOptions: {
-      output: {
-        manualChunks: {
-          'three': ['three'],
-          'react': ['react', 'react-dom'],
-          'fiber': ['@react-three/fiber', '@react-three/drei'],
-        }
-      }
-    },
-    chunkSizeWarningLimit: 1000,
-    cssCodeSplit: true,
   }
 });
