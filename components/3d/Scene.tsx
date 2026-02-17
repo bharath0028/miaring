@@ -48,11 +48,11 @@ export const Scene: React.FC<SceneProps> = ({
   useEffect(() => {
     const deviceDpr =
       typeof window !== "undefined" ? window.devicePixelRatio || 1 : 1;
-    const perfCap = renderMode === "performance";
-    const cap = perfCap ? 1.1 : isMacChrome ? 1.25 : 2;
+    // Cap DPR aggressively for better performance on deployed sites
+    const cap = 1.2;
     const capped = Math.min(deviceDpr, cap);
     setDpr(capped);
-  }, [isMacChrome, renderMode]);
+  }, []);
 
   useEffect(() => {
     if (typeof window === 'undefined') return;
@@ -119,14 +119,18 @@ export const Scene: React.FC<SceneProps> = ({
         <Canvas
         shadows
         dpr={dpr}
+        frameloop="demand"
         gl={{
-          antialias: !isMacChrome, // reduce context cost on macOS Chrome
+          antialias: false, // disable for better performance
           powerPreference: "high-performance",
           toneMapping: THREE.ACESFilmicToneMapping,
-          toneMappingExposure: isMacChrome ? 1.0 : 1.2,
+          toneMappingExposure: 1.0,
           outputColorSpace: THREE.SRGBColorSpace,
+          depth: true,
+          stencil: false,
+          alpha: true,
         }}
-        camera={{ position: [0, 2, 6], fov: 60 }}
+        camera={{ position: [0, 2, 6], fov: 50 }}
         className="w-full h-full select-none"
         style={
           (() => {
@@ -150,16 +154,18 @@ export const Scene: React.FC<SceneProps> = ({
           <Environment
             files={ENV_Metal}
             background={false}
-            blur={0.1}
+            blur={0.05}
             environmentIntensity={0.7}
           />
-          <ambientLight intensity={0.5} />
+          <ambientLight intensity={0.6} />
           <spotLight
             position={[5, 8, 5]}
             angle={0.3}
-            penumbra={1}
-            intensity={2}
+            penumbra={0.5}
+            intensity={1.8}
             castShadow
+            shadow-mapSize-width={1024}
+            shadow-mapSize-height={1024}
           />
 
           <group position={[0, -0.5, 0]} scale={ringGroupScale}>
@@ -175,9 +181,9 @@ export const Scene: React.FC<SceneProps> = ({
 
           <ContactShadows
             position={[0, -1.7, 0]}
-            opacity={0.15}
+            opacity={0.12}
             scale={10}
-            blur={2.5}
+            blur={1.5}
             far={4}
           />
           <OrbitControls
@@ -185,19 +191,19 @@ export const Scene: React.FC<SceneProps> = ({
             enablePan={false}
             minPolarAngle={0}
             maxPolarAngle={Math.PI / 1.8}
-            minDistance={renderMode === "performance" ? 2.5 : 2.2}
+            minDistance={2.5}
             maxDistance={8}
             autoRotate={autoRotate}
             autoRotateSpeed={8.5}
           />
 
-          <EffectComposer>
-            {!isMacChrome && (
+          <EffectComposer enableNormalPass={false}>
+            {renderMode === "quality" && !isMacChrome && (
               <Bloom
-                intensity={0.2}
+                intensity={0.15}
                 luminanceThreshold={2}
-                luminanceSmoothing={0.2}
-                radius={0.6}
+                luminanceSmoothing={0.3}
+                radius={0.4}
                 blendFunction={BlendFunction.SCREEN}
               />
             )}
