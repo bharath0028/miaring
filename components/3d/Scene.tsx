@@ -48,8 +48,8 @@ export const Scene: React.FC<SceneProps> = ({
   useEffect(() => {
     const deviceDpr =
       typeof window !== "undefined" ? window.devicePixelRatio || 1 : 1;
-    // Cap DPR aggressively for better performance on deployed sites
-    const cap = 1.2;
+    // Cap DPR very aggressively for deployed performance
+    const cap = 1.0;
     const capped = Math.min(deviceDpr, cap);
     setDpr(capped);
   }, []);
@@ -79,10 +79,15 @@ export const Scene: React.FC<SceneProps> = ({
   const handReferenceScale = 0.08;
   const containerRef = useRef<HTMLDivElement | null>(null);
   const controlsRef = useRef<any>(null);
+  const inputThrottleRef = useRef<boolean>(false);
 
   const zoomIn = () => {
     try {
-      // call dollyOut to move camera closer for a + (zoom in) action
+      // Throttle input for better responsiveness
+      if (inputThrottleRef.current) return;
+      inputThrottleRef.current = true;
+      setTimeout(() => { inputThrottleRef.current = false; }, 50);
+      
       controlsRef.current?.dollyOut?.(1.15);
       controlsRef.current?.update?.();
     } catch (err) {
@@ -92,7 +97,11 @@ export const Scene: React.FC<SceneProps> = ({
 
   const zoomOut = () => {
     try {
-      // call dollyIn to move camera farther for a - (zoom out) action
+      // Throttle input for better responsiveness
+      if (inputThrottleRef.current) return;
+      inputThrottleRef.current = true;
+      setTimeout(() => { inputThrottleRef.current = false; }, 50);
+      
       controlsRef.current?.dollyIn?.(1.15);
       controlsRef.current?.update?.();
     } catch (err) {
@@ -117,11 +126,11 @@ export const Scene: React.FC<SceneProps> = ({
       {!isModelReady && <RingLoader />}
 
         <Canvas
-        shadows
+        shadows="basic"
         dpr={dpr}
-        frameloop="demand"
+        frameloop="always"
         gl={{
-          antialias: false, // disable for better performance
+          antialias: false,
           powerPreference: "high-performance",
           toneMapping: THREE.ACESFilmicToneMapping,
           toneMappingExposure: 1.0,
@@ -129,6 +138,7 @@ export const Scene: React.FC<SceneProps> = ({
           depth: true,
           stencil: false,
           alpha: true,
+          precision: "lowp",
         }}
         camera={{ position: [0, 2, 6], fov: 50 }}
         className="w-full h-full select-none"
@@ -194,6 +204,8 @@ export const Scene: React.FC<SceneProps> = ({
             minDistance={2.5}
             maxDistance={8}
             autoRotate={autoRotate}
+            damping={true}
+            dampingFactor={0.05}
             autoRotateSpeed={8.5}
           />
 
