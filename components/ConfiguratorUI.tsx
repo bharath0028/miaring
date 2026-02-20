@@ -134,8 +134,8 @@ export const ConfiguratorUI: React.FC<ConfiguratorUIProps> = React.memo(
     // computed wrapper classes/styles for responsive/mobile behavior
     const wrapperStyle = isMobile ? {} : { marginLeft: '300px' };
     const wrapperClasses = isMobile
-      ? `fixed left-0 right-0 bottom-0 z-50 pointer-events-auto transition-transform duration-300 ${isVisible ? 'translate-y-0 opacity-100' : 'translate-y-full opacity-0'}`
-      : `fixed left-1/2 bottom-6 transform -translate-x-1/2 z-50 pointer-events-auto transition-transform duration-300 ${isVisible ? 'translate-y-0 opacity-100' : 'translate-y-full opacity-0'}`;
+      ? `fixed left-0 right-0 bottom-0 z-50 transition-transform duration-300 ${isVisible ? 'translate-y-0 opacity-100' : 'translate-y-full opacity-0'}`
+      : `fixed left-1/2 bottom-6 transform -translate-x-1/2 z-50 transition-transform duration-300 ${isVisible ? 'translate-y-0 opacity-100' : 'translate-y-full opacity-0'}`;
 
     useEffect(() => {
       if (typeof window === 'undefined') return;
