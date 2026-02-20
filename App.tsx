@@ -38,8 +38,6 @@ const App: React.FC = () => {
           />
         </Suspense>
       </div>
-
-      <DiamondSpecs isConfiguratorOpen={isDrawerOpen} />
       {/* Customize buttons placed outside the drawer so they don't block scene interaction */}
       {!isDrawerOpen && (
           <> 
