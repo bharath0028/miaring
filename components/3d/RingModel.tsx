@@ -9,6 +9,10 @@ import { applyOpacityToObject } from "../../utils/materials";
 import { METAL_COLORS } from "../../types";
 import { DiamondMesh } from "../ring/DiamondMesh";
 
+// Preload GLTF files to avoid heavy initialization on first render
+useGLTF.preload("/assets/models/ring/earmetal.glb");
+useGLTF.preload("/assets/models/ring/heads/round.glb");
+
 interface RingModelProps {
   metal: string;
   gem: string;
@@ -107,7 +111,7 @@ export const RingModel: React.FC<RingModelProps> = ({
           });
         }
       }
-    1});
+    });
     return clone;
   }, [headScene, metal, hasHeads]);
 
@@ -191,19 +195,25 @@ export const RingModel: React.FC<RingModelProps> = ({
     return list;
   }, [headClone]);
 
-  // Update materials when metal changes
+  // Update materials when metal changes (optimized to reuse materials)
   useEffect(() => {
     if (!baseClone) return;
     const metalColor = new THREE.Color(METAL_COLORS[metal] || "#D9D9D9");
     const applyMetal = (obj: THREE.Object3D) => {
       obj.traverse((child) => {
         if (child instanceof THREE.Mesh && !isDiamondName(child.name)) {
-          child.material = new THREE.MeshStandardMaterial({
-            color: metalColor,
-            metalness: 1,
-            roughness: 0.05,
-            envMapIntensity: 2.5,
-          });
+          // Reuse existing material and just update color to prevent shader recompilation
+          if (child.material && (child.material as THREE.MeshStandardMaterial).isMeshStandardMaterial) {
+            (child.material as THREE.MeshStandardMaterial).color.set(metalColor);
+          } else {
+            // Only create new material if it doesn't exist or isn't MeshStandardMaterial
+            child.material = new THREE.MeshStandardMaterial({
+              color: metalColor,
+              metalness: 1,
+              roughness: 0.05,
+              envMapIntensity: 2.5,
+            });
+          }
         }
       });
     };
@@ -251,7 +261,7 @@ export const RingModel: React.FC<RingModelProps> = ({
     hasNotifiedRef.current = false;
   }, [diamondShape]);
 
-  // Cleanup cloned scenes and clear loader cache to avoid GPU leaks on repeated mounts
+  // Cleanup cloned scenes to avoid GPU leaks on repeated mounts
   useEffect(() => {
     return () => {
       if (baseClone) {
@@ -260,14 +270,10 @@ export const RingModel: React.FC<RingModelProps> = ({
       if (headClone) {
         disposeObject(headClone);
       }
-      if (baseRingUrl) {
-        useGLTF.clear(baseRingUrl);
-      }
-      if (headUrl && hasHeads) {
-        useGLTF.clear(headUrl);
-      }
+      // Removed useGLTF.clear() calls to prevent heavy re-initialization
+      // This was causing shader recompilation and bounding box recalculation
     };
-  }, [baseClone, headClone, baseRingUrl, headUrl]);
+  }, [baseClone, headClone]);
 
   if (!baseClone) return null;
 
