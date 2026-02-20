@@ -176,6 +176,13 @@ export default function Scene({
             />
           </group>
 
+          <ContactShadows
+            position={[0, -1.7, 0]}
+            opacity={0.12}
+            scale={10}
+            blur={1.5}
+            far={4}
+          />
           <OrbitControls
             ref={controlsRef}
             enablePan={false}
