@@ -1,10 +1,11 @@
-import React, { useState, useEffect } from "react";
-import { Scene } from "./components/3d/Scene";
+import React, { useState, useEffect, Suspense } from "react";
 import { ConfiguratorUI } from "./components/ConfiguratorUI";
 import { SkinToneSelector } from "./components/SkinToneSelector";
 import { DiamondSpecs } from "./components/Configurator/DiamondSpecs";
 import { MetalType, GemType, SkinTone, RingModelType } from "./types/index";
 import { DiamondShape } from "./constants/optionConfig";
+
+const Scene = React.lazy(() => import("./components/3d/Scene"));
 
 const App: React.FC = () => {
   const [metal, setMetal] = useState<MetalType>(MetalType.WhiteGold);
@@ -23,17 +24,19 @@ const App: React.FC = () => {
   return (
     <div className="relative w-full h-screen lux-bg overflow-hidden">
       <div className="absolute inset-0 z-0">
-        <Scene
-          metal={metal}
-          gem={gem}
-          diamondShape={diamondShape}
-          ringModel={ringModel}
-          autoRotate={autoRotate}
-          onToggleAutoRotate={() => setAutoRotate((v) => !v)}
-          // removed tryHandOn prop
-          skinTone={skinTone}
-          renderMode={renderMode}
-        />
+        <Suspense fallback={<div className="w-full h-full bg-gray-900 flex items-center justify-center">Loading 3D scene...</div>}>
+          <Scene
+            metal={metal}
+            gem={gem}
+            diamondShape={diamondShape}
+            ringModel={ringModel}
+            autoRotate={autoRotate}
+            onToggleAutoRotate={() => setAutoRotate((v) => !v)}
+            // removed tryHandOn prop
+            skinTone={skinTone}
+            renderMode={renderMode}
+          />
+        </Suspense>
       </div>
 
       <DiamondSpecs isConfiguratorOpen={isDrawerOpen} />

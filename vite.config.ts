@@ -12,5 +12,17 @@ export default defineConfig({
     alias: {
       '@': path.resolve(__dirname, '.'),
     }
-  }
+  },
+  build: {
+    rollupOptions: {
+      output: {
+        manualChunks: {
+          three: ['three'],
+          fiber: ['@react-three/fiber'],
+          drei: ['@react-three/drei'],
+          postprocessing: ['@react-three/postprocessing', 'postprocessing'],
+        },
+      },
+    },
+  },
 });

@@ -22,7 +22,7 @@ interface SceneProps {
 
 const ENV_Metal = "/assets/metal/env.hdr";
 
-export const Scene: React.FC<SceneProps> = ({
+export default function Scene({
   metal,
   gem,
   diamondShape,
@@ -32,7 +32,7 @@ export const Scene: React.FC<SceneProps> = ({
   skinTone,
   renderMode,
   onToggleAutoRotate,
-}) => {
+}: SceneProps) {
   const [isModelReady, setIsModelReady] = useState(false);
   const [dpr, setDpr] = useState<number>(1);
   const [isMobile, setIsMobile] = useState<boolean>(false);
@@ -117,8 +117,8 @@ export const Scene: React.FC<SceneProps> = ({
       {!isModelReady && <RingLoader />}
 
         <Canvas
-        shadows
-        dpr={dpr}
+        shadows={false}
+        dpr={[1, 1.2]}
         frameloop="demand"
         gl={{
           antialias: false, // disable for better performance
@@ -162,10 +162,7 @@ export const Scene: React.FC<SceneProps> = ({
             position={[5, 8, 5]}
             angle={0.3}
             penumbra={0.5}
-            intensity={1.8}
-            castShadow
-            shadow-mapSize-width={1024}
-            shadow-mapSize-height={1024}
+            intensity={1.5}
           />
 
           <group position={[0, -0.5, 0]} scale={ringGroupScale}>
@@ -194,7 +191,7 @@ export const Scene: React.FC<SceneProps> = ({
             minDistance={2.5}
             maxDistance={8}
             autoRotate={autoRotate}
-            autoRotateSpeed={8.5}
+            autoRotateSpeed={2}
           />
 
           <EffectComposer enableNormalPass={false}>
