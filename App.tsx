@@ -67,7 +67,7 @@ const App: React.FC = () => {
       )}
 
       <div
-        className={`fixed z-70 pointer-events-none w-full md:w-[420px] h-[24vh] md:h-[55vh] bottom-[3.5rem] md:bottom-0 left-0 md:left-1/2 md:transform md:-translate-x-1/2 transition-transform duration-300 ease-out `}
+        className={`fixed z-70 ${isDrawerOpen ? 'pointer-events-auto' : 'pointer-events-none'} w-full md:w-[420px] h-[24vh] md:h-[55vh] bottom-[3.5rem] md:bottom-0 left-0 md:left-1/2 md:transform md:-translate-x-1/2 transition-transform duration-300 ease-out `}
       >
         <ConfiguratorUI
           metal={metal}
