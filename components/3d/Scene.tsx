@@ -119,7 +119,7 @@ export default function Scene({
         <Canvas
         shadows={false}
         dpr={[1, 1.2]}
-        frameloop="always"
+        frameloop="demand"
         gl={{
           antialias: false, // disable for better performance
           powerPreference: "high-performance",
