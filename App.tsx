@@ -17,8 +17,11 @@ const App: React.FC = () => {
   const [isDrawerOpen, setIsDrawerOpen] = useState<boolean>(false);
 
   const [previousAutoRotate, setPreviousAutoRotate] = useState<boolean>(false);
+  
+  // Default to performance mode on mobile for better interactions
+  const isMobileDefault = typeof window !== "undefined" && window.innerWidth <= 640;
   const [renderMode, setRenderMode] = useState<"performance" | "quality">(
-    "quality"
+    isMobileDefault ? "performance" : "quality"
   );
 
   return (

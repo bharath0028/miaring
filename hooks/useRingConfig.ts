@@ -1,6 +1,5 @@
 import { useState, useEffect } from "react";
 import { loadRingConfig, RingConfig, RingConfigData } from "../utils/ringConfig";
-import { useGLTF } from "@react-three/drei";
 
 export const useRingConfig = (ringModel: string) => {
   const [ringConfig, setRingConfig] = useState<RingConfig | null>(null);
@@ -11,11 +10,16 @@ export const useRingConfig = (ringModel: string) => {
       const selectedRing = config.rings[ringModel] || config.rings["ring"];
       if (selectedRing) {
         setRingConfig(selectedRing);
-        // Preload all heads for this ring (only if heads exist)
+        // Defer head preloading to after initial render for better performance
         if (selectedRing.heads) {
-          Object.values(selectedRing.heads).forEach((url) => useGLTF.preload(url));
+          const preloadHeads = () => {
+            const { useGLTF } = require("@react-three/drei");
+            Object.values(selectedRing.heads).forEach((url) => {
+              requestIdleCallback(() => useGLTF.preload(url));
+            });
+          };
+          requestIdleCallback(preloadHeads);
         }
-        useGLTF.preload(selectedRing.baseRing);
       }
       setDiamondEXR(config.diamondEXR);
     });

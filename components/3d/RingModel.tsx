@@ -9,10 +9,6 @@ import { applyOpacityToObject } from "../../utils/materials";
 import { METAL_COLORS } from "../../types";
 import { DiamondMesh } from "../ring/DiamondMesh";
 
-// Preload GLTF files to avoid heavy initialization on first render
-useGLTF.preload("/assets/models/ring/earmetal.glb");
-useGLTF.preload("/assets/models/ring/heads/round.glb");
-
 interface RingModelProps {
   metal: string;
   gem: string;
@@ -21,6 +17,7 @@ interface RingModelProps {
   envMapIntensity?: number;
   renderMode?: "performance" | "quality";
   onModelReady?: () => void;
+  isMobile?: boolean;
 }
 
 export const RingModel: React.FC<RingModelProps> = ({
@@ -31,9 +28,10 @@ export const RingModel: React.FC<RingModelProps> = ({
   envMapIntensity = 1.5,
   renderMode = "performance",
   onModelReady,
+  isMobile = false,
 }) => {
   const { ringConfig, diamondEXR } = useRingConfig(ringModel);
-  const diamondEnvMap = useDiamondEnvMap(diamondEXR);
+  const diamondEnvMap = useDiamondEnvMap(diamondEXR, isMobile);
   const hasNotifiedRef = useRef(false);
   const groupRef = useRef<THREE.Group>(null);
 
@@ -41,9 +39,9 @@ export const RingModel: React.FC<RingModelProps> = ({
   const hasHeads = ringConfig?.heads && Object.keys(ringConfig.heads).length > 0;
   const headUrl = hasHeads ? getHeadUrl(ringConfig, diamondShape) : "/assets/models/ring/heads/round.glb";
 
-  const { scene: baseScene } = useGLTF(baseRingUrl);
-  // Load head scene (use fallback URL if no heads, but won't be rendered)
-  const { scene: headScene } = useGLTF(headUrl);
+  // Lazy load models - only load when actually needed
+  const { scene: baseScene } = useGLTF(baseRingUrl, true);
+  const { scene: headScene } = useGLTF(headUrl, hasHeads && !!ringConfig);
 
   // Clone scenes and apply materials
   const disposeObject = (obj: THREE.Object3D) => {
@@ -122,6 +120,7 @@ export const RingModel: React.FC<RingModelProps> = ({
       diamondShape,
       baseClone,
       headClone,
+      isMobile,
     });
 
   // Collect diamond meshes
@@ -289,7 +288,7 @@ export const RingModel: React.FC<RingModelProps> = ({
           {/* Base ring diamonds */}
           {baseDiamondWorld.map((d, i) => (
             <DiamondMesh
-              key={`base-${ringModel}-${i}-${renderMode}`}
+              key={`base-${ringModel}-${i}`}
               geometry={d.geo}
               position={d.pos}
               quaternion={d.quat}
@@ -298,13 +297,14 @@ export const RingModel: React.FC<RingModelProps> = ({
               envMap={diamondEnvMap}
               opacity={ringTransitionProgress}
               renderMode={renderMode}
+              isMobile={isMobile}
             />
           ))}
 
           {/* Head diamonds */}
           {headDiamondWorld.map((d, i) => (
             <DiamondMesh
-              key={`head-${diamondShape}-${i}-${renderMode}`}
+              key={`head-${diamondShape}-${i}`}
               geometry={d.geo}
               position={d.pos}
               quaternion={d.quat}
@@ -316,6 +316,7 @@ export const RingModel: React.FC<RingModelProps> = ({
               height={d.height}
               animProgress={animProgress}
               renderMode={renderMode}
+              isMobile={isMobile}
             />
           ))}
         </>

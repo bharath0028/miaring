@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import * as THREE from "three";
 import { EXRLoader } from "three/examples/jsm/loaders/EXRLoader.js";
 
-export const useDiamondEnvMap = (diamondEXR: string) => {
+export const useDiamondEnvMap = (diamondEXR: string, isMobile?: boolean) => {
   const [diamondEnvMap, setDiamondEnvMap] = useState<THREE.Texture | null>(null);
 
   useEffect(() => {
@@ -10,25 +10,46 @@ export const useDiamondEnvMap = (diamondEXR: string) => {
     const loader = new EXRLoader();
     let currentTexture: THREE.Texture | null = null;
 
-    loader.load(
-      diamondEXR,
-      (tex) => {
-        if (!isMounted) {
-          tex.dispose();
-          return;
+    // Defer loading on mobile to prioritize initial render
+    const load = () => {
+      if (!isMounted) return;
+      
+      loader.load(
+        diamondEXR,
+        (tex) => {
+          if (!isMounted) {
+            tex.dispose();
+            return;
+          }
+          tex.mapping = THREE.EquirectangularReflectionMapping;
+          tex.needsUpdate = true;
+          currentTexture = tex;
+          setDiamondEnvMap(tex);
+        },
+        undefined,
+        (err) => {
+          if (isMounted) {
+            console.warn("EXR load error:", err);
+          }
         }
-        tex.mapping = THREE.EquirectangularReflectionMapping;
-        tex.needsUpdate = true;
-        currentTexture = tex;
-        setDiamondEnvMap(tex);
-      },
-      undefined,
-      (err) => {
-        if (isMounted) {
-          console.warn("EXR load error:", err);
-        }
+      );
+    };
+
+    if (isMobile) {
+      // On mobile, defer loading of EXR until idle
+      if (typeof requestIdleCallback !== "undefined") {
+        const id = requestIdleCallback(load, { timeout: 2000 });
+        return () => {
+          isMounted = false;
+          cancelIdleCallback(id);
+          if (currentTexture) {
+            currentTexture.dispose();
+          }
+        };
       }
-    );
+    }
+    
+    load();
 
     return () => {
       isMounted = false;
@@ -41,7 +62,7 @@ export const useDiamondEnvMap = (diamondEXR: string) => {
       }
       setDiamondEnvMap(null);
     };
-  }, [diamondEXR]);
+  }, [diamondEXR, isMobile]);
 
   return diamondEnvMap;
 };

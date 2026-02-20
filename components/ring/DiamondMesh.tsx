@@ -15,6 +15,7 @@ interface DiamondMeshProps {
   height?: number;
   animProgress?: number;
   renderMode?: "performance" | "quality";
+  isMobile?: boolean;
 }
 
 export const DiamondMesh: React.FC<DiamondMeshProps> = ({
@@ -29,6 +30,7 @@ export const DiamondMesh: React.FC<DiamondMeshProps> = ({
   height,
   animProgress = 1,
   renderMode = "performance",
+  isMobile = false,
 }) => {
   const isMacChrome =
     typeof navigator !== "undefined" &&
@@ -36,8 +38,8 @@ export const DiamondMesh: React.FC<DiamondMeshProps> = ({
     /Chrome/.test(navigator.userAgent);
 
   const materialProps = useMemo(() => {
-    const isQuality = renderMode === "quality";
-    const bounces = isQuality ? (isMacChrome ? 4 : 5) : isMacChrome ? 3 : 4;
+    const isQuality = renderMode === "quality" && !isMobile;
+    const bounces = isQuality ? (isMacChrome ? 4 : 5) : isMacChrome ? 2 : 3;
     const fresnel = isQuality ? 0.93 : 0.9;
     // Dial back dispersion to reduce rainbow/prism look; keep a hint in quality mode.
     const aberrationStrength = isQuality
@@ -45,9 +47,9 @@ export const DiamondMesh: React.FC<DiamondMeshProps> = ({
         ? 0.0025
         : 0.0045
       : isMacChrome
-      ? 0.0015
-      : 0.003;
-    const fastChroma = renderMode === "performance"; // quality prioritizes fidelity
+      ? 0.001
+      : 0.002;
+    const fastChroma = renderMode === "performance" || isMobile; // always fast on mobile
 
     return {
       bounces,
@@ -55,10 +57,11 @@ export const DiamondMesh: React.FC<DiamondMeshProps> = ({
       aberrationStrength,
       fastChroma,
     };
-  }, [renderMode, isMacChrome]);
+  }, [renderMode, isMacChrome, isMobile]);
 
   // Hide the growth clipping plane once nearly finished to avoid visible cut lines.
   const effectiveAnim = Math.min(animProgress, 0.98);
+  
   const clippingPlanes = useMemo(() => {
     if (effectiveAnim < 0.995 && minY !== undefined && height !== undefined) {
       return [

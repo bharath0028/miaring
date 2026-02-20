@@ -80,6 +80,31 @@ export default function Scene({
   const containerRef = useRef<HTMLDivElement | null>(null);
   const controlsRef = useRef<any>(null);
 
+  // Request frame on user interaction for demand-based rendering on mobile
+  useEffect(() => {
+    if (!isMobile || !controlsRef.current) return;
+    
+    const canvas = document.querySelector('canvas');
+    if (!canvas) return;
+
+    const handleInteraction = () => {
+      controlsRef.current?.invalidate?.();
+    };
+
+    const passiveOptions = { passive: true };
+    canvas.addEventListener('pointerdown', handleInteraction, passiveOptions as any);
+    canvas.addEventListener('pointermove', handleInteraction, passiveOptions as any);
+    canvas.addEventListener('pointerup', handleInteraction, passiveOptions as any);
+    canvas.addEventListener('wheel', handleInteraction, passiveOptions as any);
+
+    return () => {
+      canvas.removeEventListener('pointerdown', handleInteraction);
+      canvas.removeEventListener('pointermove', handleInteraction);
+      canvas.removeEventListener('pointerup', handleInteraction);
+      canvas.removeEventListener('wheel', handleInteraction);
+    };
+  }, [isMobile]);
+
   const zoomIn = () => {
     try {
       // call dollyOut to move camera closer for a + (zoom in) action
@@ -119,7 +144,7 @@ export default function Scene({
         <Canvas
         shadows={false}
         dpr={[1, 1.2]}
-        frameloop="always"
+        frameloop={isMobile ? "demand" : "always"}
         gl={{
           antialias: false, // disable for better performance
           powerPreference: "high-performance",
@@ -129,6 +154,7 @@ export default function Scene({
           depth: true,
           stencil: false,
           alpha: true,
+          logarithmicDepthBuffer: false,
         }}
         camera={{ position: [0, 2, 6], fov: 50 }}
         className="w-full h-full select-none"
@@ -173,6 +199,7 @@ export default function Scene({
               ringModel={ringModel}
               renderMode={renderMode}
               onModelReady={() => setIsModelReady(true)}
+              isMobile={isMobile}
             />
           </group>
 
@@ -195,7 +222,7 @@ export default function Scene({
           />
 
           <EffectComposer enableNormalPass={false}>
-            {renderMode === "quality" && !isMacChrome && (
+            {renderMode === "quality" && !isMobile && !isMacChrome && (
               <Bloom
                 intensity={0.15}
                 luminanceThreshold={2}
