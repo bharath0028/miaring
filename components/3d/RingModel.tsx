@@ -151,7 +151,7 @@ export const RingModel: React.FC<RingModelProps> = ({
           pos: worldPos,
           quat: worldQuat,
           scale: worldScale,
-          geo: c.geometry.clone(),
+          geo: c.geometry,
           minY: bbox.min.y,
           height: bbox.max.y - bbox.min.y,
         });
@@ -186,7 +186,7 @@ export const RingModel: React.FC<RingModelProps> = ({
           pos: worldPos,
           quat: worldQuat,
           scale: worldScale,
-          geo: c.geometry.clone(),
+          geo: c.geometry,
           minY: bbox.min.y,
           height: bbox.max.y - bbox.min.y,
         });
@@ -195,6 +195,14 @@ export const RingModel: React.FC<RingModelProps> = ({
     return list;
   }, [headClone]);
 
+  useEffect(() => {
+  console.log(
+    "Base diamonds:",
+    baseDiamondWorld.length,
+    "Head diamonds:",
+    headDiamondWorld.length
+  );
+}, [baseDiamondWorld, headDiamondWorld]);
   // Update materials when metal changes (optimized to reuse materials)
   useEffect(() => {
     if (!baseClone) return;
@@ -278,6 +286,8 @@ export const RingModel: React.FC<RingModelProps> = ({
   if (!baseClone) return null;
 
   return (
+
+    
     <group ref={groupRef}>
       <primitive object={baseClone} visible={ringTransitionProgress > 0} />
       {headClone && (
@@ -320,6 +330,8 @@ export const RingModel: React.FC<RingModelProps> = ({
           ))}
         </>
       )}
+      
     </group>
-  );
+  
+);
 };
