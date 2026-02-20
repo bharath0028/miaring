@@ -73,9 +73,12 @@ export default function Scene({
     return () => window.removeEventListener('resize', onResize);
   }, []);
 
-  const ringPosition = new THREE.Vector3(0.1, -0.29, -0.3);
-  // reduce default visual size of the ring on-screen
-  const ringGroupScale = 0.10;
+  // Adjust ring size and position based on device
+  const ringPosition = isMobile 
+    ? new THREE.Vector3(0.1, 0, -0.3)      // Move up on mobile
+    : new THREE.Vector3(0.1, -0.29, -0.3); // Keep original position on desktop
+  
+  const ringGroupScale = isMobile ? 0.065 : 0.10; // Reduce size on mobile
   const handReferenceScale = 0.08;
   const containerRef = useRef<HTMLDivElement | null>(null);
   const controlsRef = useRef<any>(null);
