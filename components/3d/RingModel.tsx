@@ -18,6 +18,7 @@ interface RingModelProps {
   renderMode?: "performance" | "quality";
   onModelReady?: () => void;
   isMobile?: boolean;
+  tiltUpDeg?: number;
 }
 
 export const RingModel: React.FC<RingModelProps> = ({
@@ -29,6 +30,7 @@ export const RingModel: React.FC<RingModelProps> = ({
   renderMode = "performance",
   onModelReady,
   isMobile = false,
+  tiltUpDeg = -7,
 }) => {
   const { ringConfig, diamondEXR } = useRingConfig(ringModel);
   const diamondEnvMap = useDiamondEnvMap(diamondEXR, isMobile);
@@ -227,6 +229,8 @@ export const RingModel: React.FC<RingModelProps> = ({
     if (groupRef.current) {
       groupRef.current.scale.setScalar(ringScale);
       groupRef.current.rotation.y = ringRotation;
+      // Apply a small upward tilt around the X axis (degrees -> radians)
+      groupRef.current.rotation.x = THREE.MathUtils.degToRad(tiltUpDeg);
     }
 
     if (baseClone) {
@@ -235,7 +239,7 @@ export const RingModel: React.FC<RingModelProps> = ({
     if (headClone) {
       applyOpacityToObject(headClone, ringTransitionProgress);
     }
-  }, [ringScale, ringRotation, ringTransitionProgress, baseClone, headClone]);
+  }, [ringScale, ringRotation, ringTransitionProgress, baseClone, headClone, tiltUpDeg]);
 
   // Notify when loaded
   useEffect(() => {
