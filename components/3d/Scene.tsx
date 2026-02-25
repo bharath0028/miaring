@@ -48,8 +48,8 @@ export default function Scene({
   useEffect(() => {
     const deviceDpr =
       typeof window !== "undefined" ? window.devicePixelRatio || 1 : 1;
-    // Cap DPR aggressively for better performance on deployed sites
-    const cap = 1.2;
+    // Increase DPR for crisper rendering but cap to avoid excessive GPU cost
+    const cap = 2;
     const capped = Math.min(deviceDpr, cap);
     setDpr(capped);
   }, []);
@@ -73,9 +73,12 @@ export default function Scene({
     return () => window.removeEventListener('resize', onResize);
   }, []);
 
-  const ringPosition = new THREE.Vector3(0.1, -0.29, -0.3);
-  // reduce default visual size of the ring on-screen
-  const ringGroupScale = 0.10;
+  // Adjust ring size and position based on device
+  const ringPosition = isMobile 
+    ? new THREE.Vector3(0.1, 0.50, -0.3)   // Move up more on mobile
+    : new THREE.Vector3(0.1, -0.29, -0.3); // Keep original position on desktop
+  
+  const ringGroupScale = isMobile ? 0.075 : 0.10; // Reduce size on mobile
   const handReferenceScale = 0.08;
   const containerRef = useRef<HTMLDivElement | null>(null);
   const controlsRef = useRef<any>(null);
@@ -143,10 +146,11 @@ export default function Scene({
 
         <Canvas
         shadows={false}
-        dpr={[1, 1.2]}
+        dpr={dpr}
         frameloop={isMobile ? "demand" : "always"}
         gl={{
-          antialias: false, // disable for better performance
+          antialias: true,
+          precision: "highp",
           powerPreference: "high-performance",
           toneMapping: THREE.ACESFilmicToneMapping,
           toneMappingExposure: 1.0,
@@ -180,8 +184,8 @@ export default function Scene({
           <Environment
             files={ENV_Metal}
             background={false}
-            blur={0.05}
-            environmentIntensity={0.7}
+            blur={0.0}
+            environmentIntensity={0.9}
           />
           <ambientLight intensity={0.6} />
           <spotLight

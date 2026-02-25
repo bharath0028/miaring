@@ -90,7 +90,7 @@ export const DiamondMesh: React.FC<DiamondMeshProps> = ({
         ior={2.42}
         bounces={materialProps.bounces}
         fastChroma={materialProps.fastChroma}
-        toneMapped={false}
+        toneMapped={true}
         fresnel={materialProps.fresnel}
         aberrationStrength={materialProps.aberrationStrength}
         transparent

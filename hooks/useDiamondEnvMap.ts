@@ -21,7 +21,21 @@ export const useDiamondEnvMap = (diamondEXR: string, isMobile?: boolean) => {
             tex.dispose();
             return;
           }
+          // Ensure high quality sampling for the environment map
           tex.mapping = THREE.EquirectangularReflectionMapping;
+          tex.generateMipmaps = true;
+          tex.minFilter = THREE.LinearMipmapLinearFilter;
+          tex.magFilter = THREE.LinearFilter;
+          try {
+            // Favor sRGB for color-correct reflections when appropriate
+            tex.encoding = (THREE as any).sRGBEncoding || THREE.LinearEncoding;
+          } catch (err) {
+            tex.encoding = THREE.LinearEncoding;
+          }
+          // Some DataTextures support anisotropy — increase for sharper sampling
+          try {
+            (tex as any).anisotropy = 16;
+          } catch (err) {}
           tex.needsUpdate = true;
           currentTexture = tex;
           setDiamondEnvMap(tex);
