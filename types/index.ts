@@ -24,8 +24,8 @@ export interface ConfigurationState {
 
 export const METAL_COLORS: Record<MetalType, string> = {
   [MetalType.WhiteGold]: "#D9D9D9",
-  [MetalType.YellowGold]: "#F4C542",
-  [MetalType.RoseGold]: "#E3A6A1",
+  [MetalType.YellowGold]: "#daa520",
+  [MetalType.RoseGold]: "#e9a7a1",
   [MetalType.Platinum]: "#C5C6C7",
 };
 
