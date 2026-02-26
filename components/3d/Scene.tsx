@@ -160,7 +160,7 @@ export default function Scene({
           alpha: true,
           logarithmicDepthBuffer: false,
         }}
-        camera={{ position: [-1, 2, 6], fov: 40 }}
+        camera={{ position: [-0.3, 2, 6], fov: 48 }}
         className="w-full h-full select-none"
         style={
           (() => {
