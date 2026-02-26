@@ -30,7 +30,7 @@ export const RingModel: React.FC<RingModelProps> = ({
   renderMode = "performance",
   onModelReady,
   isMobile = false,
-  tiltUpDeg = -6,
+  tiltUpDeg = -10,
 }) => {
   const { ringConfig, diamondEXR } = useRingConfig(ringModel);
   const diamondEnvMap = useDiamondEnvMap(diamondEXR, isMobile);

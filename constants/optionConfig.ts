@@ -106,10 +106,19 @@ const loadRingConfig = async (): Promise<RingConfigData> => {
 };
 
 export const createMetalOptions = (): ReadonlyArray<OptionItemData<MetalType>> => {
+  const fileMap: Record<MetalType, string> = {
+    [MetalType.WhiteGold]: '/assets/images/whitegold.png',
+    [MetalType.YellowGold]: '/assets/images/gold.png',
+    [MetalType.RoseGold]: '/assets/images/rosegold.png',
+    [MetalType.Platinum]: '/assets/images/platinum.png',
+  };
+
   return Object.values(MetalType).map((type) => ({
     value: type,
     label: type,
     previewColor: METAL_PREVIEW_COLORS[type],
+    previewImage: fileMap[type],
+    imageOnly: true,
   }));
 };
 

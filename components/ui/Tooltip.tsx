@@ -20,13 +20,13 @@ export const Tooltip: React.FC<TooltipProps> = ({ content, children, position = 
 
     return (
         <div
-            className="relative flex items-center justify-center"
+            className="relative inline-flex items-center justify-center"
             onMouseEnter={() => setIsVisible(true)}
             onMouseLeave={() => setIsVisible(false)}
         >
             {children}
             {isVisible && (
-                <div className={`absolute z-50 px-2 py-1 text-[10px] font-medium text-white bg-black/80 backdrop-blur-sm border border-white/10 rounded whitespace-nowrap pointer-events-none ${currentPositionClass}`}>
+                <div className={`fixed z-[99999] px-3 py-1.5 text-xs font-semibold text-white bg-black/90 backdrop-blur-sm border border-white/20 rounded shadow-lg whitespace-nowrap pointer-events-none ${currentPositionClass}`}>
                     {content}
                 </div>
             )}
