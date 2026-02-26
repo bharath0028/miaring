@@ -8,7 +8,7 @@ import { DiamondShape } from "./constants/optionConfig";
 const Scene = React.lazy(() => import("./components/3d/Scene"));
 
 const App: React.FC = () => {
-  const [metal, setMetal] = useState<MetalType>(MetalType.WhiteGold);
+  const [metal, setMetal] = useState<MetalType>(MetalType.YellowGold);
   const [gem, setGem] = useState<GemType>(GemType.White);
   const [diamondShape, setDiamondShape] = useState<DiamondShape>("round");
   const [ringModel, setRingModel] = useState<RingModelType>("ring");
